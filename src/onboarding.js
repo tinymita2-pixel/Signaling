@@ -56,8 +56,8 @@ export async function sendGuildJoinGuide(guild) {
         value: "`/차원통신 연결설정 상태:참여`",
       },
       {
-        name: "3. 즉시 교신",
-        value: "설정 후 `/차원통신 즉시연결`을 사용하면 자정을 기다리지 않고 상대 서버를 찾습니다.",
+        name: "3. 자정 교신",
+        value: "설정이 끝나면 매일 자정에 참여 서버끼리 자동으로 상대 서버를 찾습니다.",
       },
     );
 

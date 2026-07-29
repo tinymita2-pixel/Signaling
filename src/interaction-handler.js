@@ -1,12 +1,12 @@
 import { PermissionFlagsBits } from "discord.js";
 import { config } from "./config.js";
 import { addReport, getStore, updateGuild } from "./store.js";
-import { connectGuildNow, endPair } from "./matcher.js";
+import { endPair } from "./matcher.js";
 import { updatePresence } from "./presence.js";
 import { createDimensionalEmbed, themeColors } from "./theme.js";
 
 const subcommandsAllowedBeforeSetup = new Set(["채널설정", "상태", "내프로필"]);
-const managerOnlySubcommands = new Set(["채널설정", "연결설정", "즉시연결", "한줄메시지설정", "프로필공개", "신고"]);
+const managerOnlySubcommands = new Set(["채널설정", "연결설정", "한줄메시지설정", "프로필공개", "신고"]);
 
 function dateKeyInTimezone(date, timezone) {
   const parts = new Intl.DateTimeFormat("en", {
@@ -220,40 +220,6 @@ export async function handleInteraction(interaction, client) {
 
   if (subcommand === "내프로필") {
     await interaction.reply({ embeds: [selfProfileEmbed(interaction)], ephemeral: true });
-    return;
-  }
-
-  if (subcommand === "즉시연결") {
-    await interaction.deferReply({ ephemeral: true });
-
-    await updateGuild(guildId, {
-      guildName: interaction.guild.name,
-    });
-
-    const result = await connectGuildNow(client, guildId);
-    updatePresence(client);
-
-    if (result.status === "connected") {
-      await interaction.editReply("대기 중인 상대 서버를 찾아 바로 연결했어요.");
-      return;
-    }
-
-    if (result.status === "already_connected") {
-      await interaction.editReply("이미 상대 서버와 연결되어 있어요.");
-      return;
-    }
-
-    if (result.status === "not_ready") {
-      await interaction.editReply("먼저 `/차원통신 채널설정`으로 채널을 지정하고 `/차원통신 연결설정 상태:참여`로 연결 참여를 켜주세요.");
-      return;
-    }
-
-    if (result.status === "channel_missing") {
-      await interaction.editReply("설정된 익명 채팅 채널을 찾지 못했어요. `/차원통신 채널설정`으로 채널을 다시 지정해주세요.");
-      return;
-    }
-
-    await interaction.editReply("매칭되는 상대 채널을 찾지 못했어요. 다른 서버가 참여하면 다시 시도해주세요.");
     return;
   }
 

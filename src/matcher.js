@@ -159,63 +159,6 @@ export async function endPair(client, guildId, reason = "연결이 종료되었�
   return { ended: true, partnerId };
 }
 
-export async function connectGuildNow(client, guildId) {
-  const store = getStore();
-  const settings = store.guilds[guildId];
-
-  if (!settings?.enabled || !settings.channelId) {
-    return { status: "not_ready", partnerId: null };
-  }
-
-  if (!(await hasUsableRelayChannel(client, guildId))) {
-    return { status: "channel_missing", partnerId: null };
-  }
-
-  if (store.pairs[guildId]) {
-    return { status: "already_connected", partnerId: store.pairs[guildId] };
-  }
-
-  const candidateIds = shuffle(
-    Object.entries(store.guilds)
-      .filter(([candidateId, guild]) => {
-        return (
-          candidateId !== guildId &&
-          guild.enabled &&
-          guild.channelId &&
-          !store.pairs[candidateId] &&
-          canPair(store, guildId, candidateId)
-        );
-      })
-      .map(([candidateId]) => candidateId),
-  );
-
-  const usableCandidateIds = [];
-
-  for (const candidateId of candidateIds) {
-    if (await hasUsableRelayChannel(client, candidateId)) {
-      usableCandidateIds.push(candidateId);
-    }
-  }
-
-  const availableCount = usableCandidateIds.length;
-  let partnerId = null;
-
-  partnerId = usableCandidateIds[0] ?? null;
-
-  if (!partnerId) {
-    return { status: "no_partner", partnerId: null };
-  }
-
-  await setPair(guildId, partnerId);
-
-  await Promise.all([
-    sendPairStarted(client, guildId, partnerId, "관리자가 즉시 연결을 실행했습니다.", availableCount),
-    sendPairStarted(client, partnerId, guildId, "상대 서버가 즉시 연결을 실행했습니다.", availableCount),
-  ]);
-
-  return { status: "connected", partnerId };
-}
-
 async function awardCompletedPairs(client, completedGuildIds) {
   if (completedGuildIds.length === 0) return;
 
@@ -320,7 +263,7 @@ export async function runDailyMatching(
       return sendSystemMessage(
         client,
         guildId,
-        "매칭되는 상대 채널을 찾지 못했습니다.\n다른 서버가 참여하면 `/차원통신 즉시연결`로 다시 시도할 수 있습니다.",
+        "매칭되는 상대 채널을 찾지 못했습니다.\n다음 자정 매칭 때 다시 연결을 시도합니다.",
         [],
         { title: "수신 좌표 없음", color: themeColors.warning },
       );

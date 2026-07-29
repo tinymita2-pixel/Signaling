@@ -46,11 +46,6 @@ export const commandBuilders = [
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName("즉시연결")
-        .setDescription("자정을 기다리지 않고 현재 대기 중인 다른 서버와 연결합니다."),
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
         .setName("한줄메시지설정")
         .setDescription("상대 서버에 보여줄 서버 한줄 메시지를 설정합니다.")
         .addStringOption((option) =>
