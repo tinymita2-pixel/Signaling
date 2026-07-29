@@ -1,0 +1,24 @@
+{
+  "name": "anonymous-discord-room-bot",
+  "version": "0.1.0",
+  "description": "A Discord bot that anonymously pairs opted-in servers each day.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "register": "node src/register-commands.js",
+    "register-guild": "node src/register-guild-commands.js",
+    "register-global": "node src/register-global-commands.js",
+    "clear-global": "node src/clear-global-commands.js",
+    "clear-guilds": "node src/clear-guild-commands.js",
+    "list-commands": "node src/list-commands.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "discord.js": "^14",
+    "dotenv": "^16",
+    "node-cron": "^4.6.0"
+  }
+}
